@@ -1,0 +1,88 @@
+[
+  {
+    "name": "Core",
+    "groups": [
+      {
+        "name": "Cells",
+        "classes": [
+          "Backgrid.Cell",
+          "Backgrid.DatetimeCell",
+          "Backgrid.DateCell",
+          "Backgrid.TimeCell",
+          "Backgrid.NumberCell",
+          "Backgrid.IntegerCell",
+          "Backgrid.StringCell",
+          "Backgrid.UriCell",
+          "Backgrid.EmailCell",
+          "Backgrid.BooleanCell",
+          "Backgrid.SelectCell"
+        ]
+      }, {
+        "name": "CellEditors",
+        "classes": [
+          "Backgrid.CellEditor",
+          "Backgrid.InputCellEditor",
+          "Backgrid.SelectCellEditor"
+        ]
+      }, {
+        "name": "Formatters",
+        "classes": [
+          "Backgrid.CellFormatter",
+          "Backgrid.NumberFormatter",
+          "Backgrid.DatetimeFormatter"
+        ]
+      }, {
+        "name": "Columns",
+        "classes": [
+          "Backgrid.*Column*"
+        ]
+      }, {
+        "name": "Headers",
+        "classes": [
+          "Backgrid.HeaderCell",
+          "Backgrid.HeaderRow",
+          "Backgrid.Header"
+        ]
+      }, {
+        "name": "Others",
+        "classes": [
+          "Backgrid.Grid",
+          "Backgrid.Body",
+          "Backgrid.Row",
+          "Backgrid.Footer"
+        ]
+      }
+    ]
+  }, {
+    "name": "Extensions",
+    "groups": [
+      {
+        "name": "Paginator",
+        "classes": [
+          "Backgrid.Extension.Paginator"
+        ]
+      },
+      {
+        "name": "TextCell",
+        "classes": [
+          "Backgrid.Extension.TextCell",
+          "Backgrid.Extension.TextareaEditor"
+        ]
+      },
+      {
+        "name": "MomentCell",
+        "classes": [
+          "Backgrid.Extension.MomentFormatter",
+          "Backgrid.Extension.MomentCell"
+        ]
+      },
+      {
+        "name": "Select2Cell",
+        "classes": [
+          "Backgrid.Extension.Select2Cell",
+          "Backgrid.Extension.Select2CellEditor"
+        ]
+      }
+    ]
+  }
+]

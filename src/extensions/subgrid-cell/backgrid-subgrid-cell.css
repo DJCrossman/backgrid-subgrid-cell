@@ -1,0 +1,16 @@
+/*
+  backgrid-subgrid-cell
+  David Crossman - March 14, 2013
+*/
+
+.backgrid .subgrid-cell { 
+  font-weight: bold;
+  font-family: "Courier New", Courier, monospace;
+  text-align: center;
+  outline: 0;
+  -webkit-user-select: none;
+   -khtml-user-select: none;
+     -moz-user-select: none;
+       -o-user-select: none;
+          user-select: none; 
+}
