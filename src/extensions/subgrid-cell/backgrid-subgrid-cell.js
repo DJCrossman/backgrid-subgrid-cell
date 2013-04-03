@@ -1,6 +1,6 @@
 /*
   backgrid-subgrid-cell
-  David Crossman - March 18, 2013
+  David Crossman - March 27, 2013
 */
 
 (function (window, $, _, Backbone, Backgrid)  {
@@ -51,13 +51,15 @@ var SubgridRow = Backgrid.SubgridRow = Backbone.View.extend({
      @throws {TypeError} If options.columns or options.model is undefined.
    */
   initialize: function (options) {
+    var thisView = this;
     var GridColumnView = Backbone.View.extend({ tagName: "td" });
     var SubCollection  = Backbone.Collection.extend({ model: this.submodel });
     this.gridColumnView = new GridColumnView({}); 
     this.sideColumnView = new GridColumnView({});
-
+    this.el.id = this.model.get('id');
     requireOptions(options, ["columns", "model"]);
     this.columns = options.columns;
+    this.bind("remove", this.remove, this);
 
     var subcolumns = this.subcolumns = options.model.get("subcolumns");
     if (!(subcolumns instanceof Backgrid.Columns)) {
@@ -164,25 +166,42 @@ var SubgridCell = Backgrid.SubgridCell = Backgrid.Cell.extend({
     $(this.el).append(this.icon());
   },
 /**
+  Binds the remove function with the row when a model is removed.
+*/  
+  removeRow: function () {
+    var thisView = this;
+    $('.backgrid-subgrid-row').filter(function() { 
+      return ($(this).attr("id") == thisView.model.get('id')); 
+    }).remove()
+  },
+/**
+  Intializes and renders the subrow when the state is expanded.
+*/  
+  initializeSubRow: function () {
+    this.subrow = new SubgridRow({columns: this.column.collection, model: this.model});
+    $(this.el).parent("tr").after(this.subrow.render().$el);
+    // binds the parent
+    this.model.bind('remove', this.removeRow, this); 
+  },
+/**
  Simple appends another row for the subgrid and appends the grid to the row.
  Saves the current data the model.
 */
   expandSubgrid: function () {
     this.state = 'expanded';
-    this.subrow = new SubgridRow({columns: this.column.collection, model: this.model});
+    this.initializeSubRow();
     this.save();
-    $(this.el).parent("tr").after(this.subrow.render().$el);
   },
 /**
  Removes the row from the parent grid. Saves the current data the model.
 */
   collaspeSubgrid: function () {
     this.state = 'collasped';
-    this.save();
     this.subrow.remove();
+    this.save();
   },
 /**
-  Takes altered information from the subgrid and updates the parent model
+  Takes altered information from the subgrid and updates the parent model.
 */
   save: function () {
     this.model.set('subgrid', this.subrow.subgrid);
