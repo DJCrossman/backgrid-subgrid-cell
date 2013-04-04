@@ -1,6 +1,6 @@
 /*
   backgrid-subgrid-cell
-  David Crossman - March 27, 2013
+  David Crossman - April 4, 2013
 */
 
 (function (window, $, _, Backbone, Backgrid)  {
@@ -10,6 +10,14 @@ function requireOptions(options, requireOptionKeys) {
     var key = requireOptionKeys[i];
     if (_.isUndefined(options[key])) {
       throw new TypeError("'" + key  + "' is required");
+    }
+  }
+}
+function requireTypeOrder(options, requireOptionType, placement) {
+  var optionsModels = options.collection.models;
+  for (var i = 0; i < optionsModels.length; i++) {
+    if (!(optionsModels[placement]._previousAttributes.cell == requireOptionType)) {
+      throw new TypeError("'" + requireOptionType  + "' is not in the required column");
     }
   }
 }
@@ -131,7 +139,7 @@ var SubgridCell = Backgrid.SubgridCell = Backgrid.Cell.extend({
     requireOptions(options, ["model", "column"]);
     requireOptions(options.column.attributes, ["optionValues"]);
     this.model.set('subcolumns', options.column.get('optionValues'));
-
+    requireTypeOrder(options.column, 'subgrid', 0 )
     this.column = options.column;
     if (!(this.column instanceof Backgrid.Column)) {
       this.column = new Backgrid.Column(this.column);
@@ -210,3 +218,4 @@ var SubgridCell = Backgrid.SubgridCell = Backgrid.Cell.extend({
 });
 
 }(window, jQuery, _, Backbone, Backgrid));
+
