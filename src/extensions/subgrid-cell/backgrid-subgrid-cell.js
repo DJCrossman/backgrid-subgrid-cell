@@ -1,6 +1,6 @@
 /*
   backgrid-subgrid-cell
-  David Crossman - April 4, 2013
+  David Crossman - April 17, 2013
 */
 
 (function (window, $, _, Backbone, Backgrid)  {
@@ -21,7 +21,6 @@ function requireTypeOrder(options, requireOptionType, placement) {
     }
   }
 }
-
 function resolveNameToClass(name, suffix) {
   if (_.isString(name)) {
     var key = capitalize(name) + suffix;
@@ -64,20 +63,20 @@ var SubgridRow = Backgrid.SubgridRow = Backbone.View.extend({
     var SubCollection  = Backbone.Collection.extend({ model: this.submodel });
     this.gridColumnView = new GridColumnView({}); 
     this.sideColumnView = new GridColumnView({});
-    this.el.id = this.model.get('id');
+    this.parentName = this.el.id = this.model.get("id");
     requireOptions(options, ["columns", "model"]);
     this.columns = options.columns;
-    this.bind("remove", this.remove, this);
 
     var subcolumns = this.subcolumns = options.model.get("subcolumns");
     if (!(subcolumns instanceof Backgrid.Columns)) {
       subcolumns = this.subcolumns = this.model.subcolumns = new Backgrid.Columns(subcolumns);
     }
-    var subcollection = this.subcollection = options.model.get('subcollection');
+    var subcollection = this.subcollection = options.model.get("subcollection");
     if (!(subcollection instanceof Backbone.Collection)) {
       subcollection = this.subcollection = this.model.subcollection = new SubCollection(subcollection);
     }
     this.initializeSubGrid();
+    this.listenTo(Backbone, "SubgridCell:remove", this.render);
   },
 
   initializeSubGrid: function (){
@@ -113,10 +112,10 @@ var SubgridRow = Backgrid.SubgridRow = Backbone.View.extend({
 var SubgridCell = Backgrid.SubgridCell = Backgrid.Cell.extend({
 
   className: "subgrid-cell",
-  // define the icon withing the cell
+  // define the icon within the cell
   icon: function () {
     var iconOptions = "+";
-    if(this.state == 'expanded')
+    if(this.state == "expanded")
       iconOptions = "-";
     
     return (iconOptions);
@@ -135,24 +134,24 @@ var SubgridCell = Backgrid.SubgridCell = Backgrid.Cell.extend({
      said name cannot be found in the Backgrid module.
   */
   initialize: function (options) {
-    this.state = 'collasped';
+    this.state = "collasped";
     requireOptions(options, ["model", "column"]);
     requireOptions(options.column.attributes, ["optionValues"]);
-    this.model.set('subcolumns', options.column.get('optionValues'));
-    requireTypeOrder(options.column, 'subgrid', 0 )
+    this.model.set("subcolumns", options.column.get("optionValues"));
+    requireTypeOrder(options.column, "subgrid", 0 );
+
     this.column = options.column;
     if (!(this.column instanceof Backgrid.Column)) {
       this.column = new Backgrid.Column(this.column);
     }
-
-    this.formatter = resolveNameToClass(this.formatter, "Formatter");
-    this.editor = resolveNameToClass(this.editor, "CellEditor");
+    this.listenTo(Backbone, "backgrid:sort", this.clearSubgrid);
+    this.model.bind("remove", this.clearSubgrid, this);
   },
   /**
     Renders a collasped view.
   */
   render: function () {
-    this.$el.empty().text(this.formatter.fromRaw(this.model.get(this.column.get("name"))));  
+    //this.$el.empty().text(this.formatter.fromRaw(this.model.get(this.column.get("name"))));  
     $(this.el).append(this.icon());
     return this;
   },
@@ -161,59 +160,41 @@ var SubgridCell = Backgrid.SubgridCell = Backgrid.Cell.extend({
     "click": "stateSwitch"
   },
 /**
-  Checks the current state of the cell, and calls either a expand
-  or collaspe function
+  Checks the current state of the cell, saves the current data the model, and either:
+  Appends another row for the subgrid and appends the grid to the row. 
+  Or Removes the row from the parent grid.
 */
   stateSwitch: function () {
     $(this.el).html("");
-    if (this.state == 'collasped'){
-      this.expandSubgrid();
+    if (this.state == "collasped"){
+      this.state = "expanded";
+      this.subrow = new SubgridRow({columns: this.column.collection, model: this.model});
+      $(this.el).parent("tr").after(this.subrow.render().$el);
     }else{
-      this.collaspeSubgrid();
+      this.state = "collasped";
+      this.subrow.remove();
     }
+    this.model.set("subgrid", this.subrow.subgrid);
+    this.model.set("subcollection", this.subrow.subcollection);
     $(this.el).append(this.icon());
   },
 /**
   Binds the remove function with the row when a model is removed.
 */  
-  removeRow: function () {
+  clearSubgrid: function () {
     var thisView = this;
-    $('.backgrid-subgrid-row').filter(function() { 
+    // TO DO : Clean up code
+
+    $(".backgrid-subgrid-row").filter(function() { 
       return ($(this).attr("id") == thisView.model.get('id')); 
     }).remove()
   },
-/**
-  Intializes and renders the subrow when the state is expanded.
-*/  
-  initializeSubRow: function () {
-    this.subrow = new SubgridRow({columns: this.column.collection, model: this.model});
-    $(this.el).parent("tr").after(this.subrow.render().$el);
-    // binds the parent
-    this.model.bind('remove', this.removeRow, this); 
-  },
-/**
- Simple appends another row for the subgrid and appends the grid to the row.
- Saves the current data the model.
-*/
-  expandSubgrid: function () {
-    this.state = 'expanded';
-    this.initializeSubRow();
-    this.save();
-  },
-/**
- Removes the row from the parent grid. Saves the current data the model.
-*/
-  collaspeSubgrid: function () {
-    this.state = 'collasped';
-    this.subrow.remove();
-    this.save();
-  },
-/**
-  Takes altered information from the subgrid and updates the parent model.
-*/
-  save: function () {
-    this.model.set('subgrid', this.subrow.subgrid);
-    this.model.set('subcollection', this.subrow.subcollection);
+  remove: function () {
+    if (this.subrow) {
+      this.subrow.remove.apply(this, arguments);
+      delete this.subrow;
+    }
+    return Backbone.View.prototype.remove.apply(this, arguments);
   }
 });
 
