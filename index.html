@@ -58,7 +58,7 @@
 
 <pre><code>// define the child columns
 var subcolumns = [ 
-    { name: "id", label: "", cell: "integer"},
+    { name: "id", label: "ID", cell: "integer"},
     { name: "name", label: "Name", cell: "string"}, 
     { name: "pending", label: "Pending Invoices Status", cell: integer"},
     { name: "billtype", label: "Billing Type", cell: "string"},
@@ -66,7 +66,8 @@ var subcolumns = [
     { name: "totprice", label: "Total Price", cell: "number"}];
 // define the parent columns
 var columns = [
-    {name: "subgrid", label: "", cell: "subgrid", optionValues : subcolumns},
+    { name: "subgrid", label: "", cell: "subgrid", optionValues : subcolumns},
+    { name: "id", label: "ID", cell: "integer"},
     { name: "name", label: "Customer Name", cell: "string"},
     { name: "pop", label: "Population", cell: "integer"},
     { name: "percentage", label: "% of World Population", cell: "number"},
@@ -113,7 +114,10 @@ var world = new WorldView();
 <p>Boom! This initializes a grid with subgrid. </p>
 
 <h2>Result</h2>
-<div id="territories-content"></div>
+<div id="territories-content">
+  <button class="remove-selected"> Remove Selected Invoices </button>
+</div>
+&nbsp;
       </section>
     </div>
 
@@ -125,12 +129,12 @@ var world = new WorldView();
       </footer>
     </div>
 
-  <script src="javascripts/jquery.js"></script>
-  <script src="javascripts/underscore.js"></script>
-  <script src="javascripts/backbone.js"></script>
-  <script src="javascripts/backgrid.min.js"></script>
-  <script src="src/extensions/subgrid-cell/backgrid-subgrid-cell.js"></script>
-  <script src="javascripts/example.js"></script>
+  <script type='text/javascript' src="javascripts/jquery.js"></script>
+  <script type='text/javascript' src="javascripts/underscore.js"></script>
+  <script type='text/javascript' src="javascripts/backbone.js"></script>
+  <script type='text/javascript' src="javascripts/backgrid.min.js"></script>
+  <script type='text/javascript' src="src/extensions/subgrid-cell/backgrid-subgrid-cell.js"></script>
+  <script type='text/javascript' src="javascripts/example.js"></script>
 
   </body>
 </html>

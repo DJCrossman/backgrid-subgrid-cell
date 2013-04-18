@@ -88,7 +88,7 @@ var clientsIN = [
 
 var territoriesIN = [{"name": "Afghanistan", "url": "http://en.wikipedia.org/wiki/Afghanistan", "pop": 25500100, "date": "2013-01-01", "percentage": 0.36, "id": 1}, {"name": "Albania", "url": "http://en.wikipedia.org/wiki/Albania", "pop": 2831741, "date": "2011-10-01", "percentage": 0.04, "id": 2}, {"name": "Algeria", "url": "http://en.wikipedia.org/wiki/Algeria", "pop": 37100000, "date": "2012-01-01", "percentage": 0.53, "id": 3}, {"name": "American Samoa (USA)", "url": "http://en.wikipedia.org/wiki/American_Samoa", "pop": 55519, "date": "2010-04-01", "percentage": 0.00079, "id": 4}, {"name": "Andorra", "url": "http://en.wikipedia.org/wiki/Andorra", "pop": 78115, "date": "2011-07-01", "percentage": 0.0011, "id": 5}, {"name": "Angola", "url": "http://en.wikipedia.org/wiki/Angola", "pop": 20609294, "date": "2012-07-01", "percentage": 0.29, "id": 6}, {"name": "Anguilla (UK)", "url": "http://en.wikipedia.org/wiki/Anguilla", "pop": 13452, "date": "2011-05-11", "percentage": 0.00019, "id": 7}, {"name": "Antigua and Barbuda", "url": "http://en.wikipedia.org/wiki/Antigua_and_Barbuda", "pop": 86295, "date": "2011-05-27", "percentage": 0.0012, "id": 8}, {"name": "Argentina", "url": "http://en.wikipedia.org/wiki/Argentina", "pop": 40117096, "date": "2010-10-27", "percentage": 0.57, "id": 9}, {"name": "Armenia", "url": "http://en.wikipedia.org/wiki/Armenia", "pop": 3275700, "date": "2012-06-01", "percentage": 0.046, "id": 10}, {"name": "Aruba (Netherlands)", "url": "http://en.wikipedia.org/wiki/Aruba", "pop": 101484, "date": "2010-09-29", "percentage": 0.0014, "id": 11}, {"name": "Australia", "url": "http://en.wikipedia.org/wiki/Australia", "pop": 22808690, "date": "2012-11-11", "percentage": 0.32, "id": 12}, {"name": "Austria", "url": "http://en.wikipedia.org/wiki/Austria", "pop": 8452835, "date": "2012-07-01", "percentage": 0.12, "id": 13}, {"name": "Azerbaijan", "url": "http://en.wikipedia.org/wiki/Azerbaijan", "pop": 9235100, "date": "2012-01-01", "percentage": 0.13, "id": 14}];
 // define the child columns
-var subcolumns = [ {name: "id", label: "", cell: "integer"},
+var subcolumns = [ {name: "id", label: "ID", cell: "integer"},
 				   { name: "name", label: "Name", cell: "string"}, 
                    { name: "billtype", label: "Billing Type", cell: "string"},
                    { name: "pending", label: "Pending Invoices Status", cell: "integer"},
@@ -96,6 +96,7 @@ var subcolumns = [ {name: "id", label: "", cell: "integer"},
                    { name: "totprice", label: "Total Price", cell: "number"}];
 // define the parent columns
 var columns = [ {name: "subgrid", label: "", cell: "subgrid", optionValues : subcolumns},
+                {name: "id", label: "ID", cell: "integer"},
                 {name: "name", label: "Customer Name", cell: "string"},
                 {name: "pop", label: "Population", cell: "integer"},
                 {name: "percentage", label: "% of World Population", cell: "number"},
@@ -109,9 +110,9 @@ var Clients = Backbone.Collection.extend({
 	model: Client
 });
 
-// intialize model
+// initialize model
 var Territory = Backbone.Model.extend();
-// intialize collection
+// initialize collection
 var Territories = Backbone.Collection.extend({ 
 	model: Territory
 });
@@ -130,6 +131,9 @@ var WorldView = Backbone.View.extend({
       this.collection.models[i].set('subcollection', clientsIN[i]);
     }
   },
+  events: {
+      'click button.remove-selected': 'removeSelectedInvoices'
+  },
   render: function () {
     // creates a grid
     this.grid = new Backgrid.Grid({
@@ -137,7 +141,13 @@ var WorldView = Backbone.View.extend({
         collection: this.collection
     });
     // appends grid to view
-    this.$el.append(this.grid.render().el);
+    this.$el.prepend(this.grid.render().el);
+  },
+  getSelectedInvoices: function () {
+    return this.grid.collection.where({ select: true});
+  },
+  removeSelectedInvoices: function () {
+    this.grid.removeRow(this.getSelectedInvoices());
   }
 });
 
