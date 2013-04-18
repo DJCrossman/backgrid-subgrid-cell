@@ -1,6 +1,6 @@
 /*
   backgrid-subgrid-cell
-  David Crossman - April 17, 2013
+  David Crossman - April 18, 2013
 */
 
 (function (window, $, _, Backbone, Backgrid)  {
@@ -33,6 +33,7 @@ function resolveNameToClass(name, suffix) {
 
   return name;
 }
+
 /*
    SubgridRow is a simple container view that takes a grid instance and renders a
    grid within the specific column.
@@ -63,10 +64,10 @@ var SubgridRow = Backgrid.SubgridRow = Backbone.View.extend({
     var SubCollection  = Backbone.Collection.extend({ model: this.submodel });
     this.gridColumnView = new GridColumnView({}); 
     this.sideColumnView = new GridColumnView({});
-    this.parentName = this.el.id = this.model.get("id");
+
+    this.el.id = this.model.get("id");
     requireOptions(options, ["columns", "model"]);
     this.columns = options.columns;
-
     var subcolumns = this.subcolumns = options.model.get("subcolumns");
     if (!(subcolumns instanceof Backgrid.Columns)) {
       subcolumns = this.subcolumns = this.model.subcolumns = new Backgrid.Columns(subcolumns);
@@ -75,15 +76,13 @@ var SubgridRow = Backgrid.SubgridRow = Backbone.View.extend({
     if (!(subcollection instanceof Backbone.Collection)) {
       subcollection = this.subcollection = this.model.subcollection = new SubCollection(subcollection);
     }
-    this.initializeSubGrid();
-    this.listenTo(Backbone, "SubgridCell:remove", this.render);
-  },
 
-  initializeSubGrid: function (){
     this.subgrid = new Backgrid.Grid({
                   columns: this.subcolumns,
                   collection: this.subcollection
                 });
+
+    this.listenTo(Backbone, "SubgridCell:remove", this.render);
   },
   /**
      Renders a row containing a subgrid for this row's model.
@@ -157,14 +156,15 @@ var SubgridCell = Backgrid.SubgridCell = Backgrid.Cell.extend({
   },
 
   events: {
-    "click": "stateSwitch"
+    "click": "stateConverter"
   },
 /**
-  Checks the current state of the cell, saves the current data the model, and either:
-  Appends another row for the subgrid and appends the grid to the row. 
-  Or Removes the row from the parent grid.
+  Checks the current state of the cell, either:
+  appends another row for the subgrid and appends the grid to the row 
+  or removes the row from the parent grid,
+  and saves the current data the model.
 */
-  stateSwitch: function () {
+  stateConverter: function () {
     $(this.el).html("");
     if (this.state == "collasped"){
       this.state = "expanded";
@@ -184,7 +184,6 @@ var SubgridCell = Backgrid.SubgridCell = Backgrid.Cell.extend({
   clearSubgrid: function () {
     var thisView = this;
     // TO DO : Clean up code
-
     $(".backgrid-subgrid-row").filter(function() { 
       return ($(this).attr("id") == thisView.model.get('id')); 
     }).remove()
@@ -199,4 +198,3 @@ var SubgridCell = Backgrid.SubgridCell = Backgrid.Cell.extend({
 });
 
 }(window, jQuery, _, Backbone, Backgrid));
-
