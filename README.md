@@ -30,7 +30,8 @@ var subcolumns = [
     { name: "totprice", label: "Total Price", cell: "number"}];
 // define the parent columns
 var columns = [
-    {name: "subgrid", label: "", cell: "subgrid", optionValues : subcolumns},
+    { name: "subgrid", label: "", cell: "subgrid", optionValues : subcolumns},
+    { name: "id", label: "ID", cell: "integer"},
     { name: "name", label: "Customer Name", cell: "string"},
     { name: "pop", label: "Population", cell: "integer"},
     { name: "percentage", label: "% of World Population", cell: "number"},
