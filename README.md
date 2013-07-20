@@ -77,4 +77,4 @@ var world = new WorldView();
 Boom! This initializes a grid with subgrid. 
 
 ## Result
-Check it out [here](http://crossmda.github.com/backgrid-subgrid-cell//).
+Check it out [here](http://DJCrossman.github.com/backgrid-subgrid-cell//).
