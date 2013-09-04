@@ -1,6 +1,6 @@
 /*
   backgrid-subgrid-cell
-  David Crossman - April 18, 2013
+  David Crossman - September 4, 2013
 */
 
 (function (window, $, _, Backbone, Backgrid)  {
@@ -91,9 +91,9 @@ var SubgridRow = Backgrid.SubgridRow = Backbone.View.extend({
     this.$el.empty();
     this.gridColumnView.el.colSpan = (this.columns.length - 1);
     // Appends the first  empty column
-    $(this.el).append(this.sideColumnView.render().$el);
+    this.$el.append(this.sideColumnView.render().$el);
     // Appends the subgrid column that spans the rest of the table 
-    $(this.el).append(this.gridColumnView.render().$el);
+    this.$el.append(this.gridColumnView.render().$el);
     // Appends the Subgrid
     this.gridColumnView.$el.append(this.subgrid.render().$el);
     return this;
@@ -110,7 +110,10 @@ var SubgridRow = Backgrid.SubgridRow = Backbone.View.extend({
 
 var SubgridCell = Backgrid.SubgridCell = Backgrid.Cell.extend({
 
-  className: "subgrid-cell",
+  className: function () {
+    var parentId = this.cid.substr(4) - 1;
+    return "subgrid-cell view" + parentId;
+  },
   // define the icon within the cell
   icon: function () {
     var iconOptions = "+";
@@ -133,7 +136,6 @@ var SubgridCell = Backgrid.SubgridCell = Backgrid.Cell.extend({
      said name cannot be found in the Backgrid module.
   */
   initialize: function (options) {
-    this.model.set("substate", "collasped");
     requireOptions(options, ["model", "column"]);
     requireOptions(options.column.attributes, ["optionValues"]);
     this.model.set("subcolumns", options.column.get("optionValues"));
@@ -147,16 +149,43 @@ var SubgridCell = Backgrid.SubgridCell = Backgrid.Cell.extend({
     this.model.bind("remove", this.clearSubgrid, this);
   },
   /**
-    Renders a collasped view.
+    Renders a view.
   */
   render: function () {
-    //this.$el.empty().text(this.formatter.fromRaw(this.model.get(this.column.get("name"))));  
+    if(this.model.has("substate")){
+      if (this.model.get("substate") == "collasped"){
+        this.renderCollasped();
+      }else{
+        this.renderExpanded();
+      }
+    }else {
+      this.model.set("substate", "collasped");
+    }
     $(this.el).append(this.icon());
     return this;
   },
 
   events: {
     "click": "stateConverter"
+  },
+/**
+  Renders a Expanded view.
+*/
+  renderExpanded: function () {
+    this.model.set("substate", "expanded");
+    this.subrow = new SubgridRow({columns: this.column.collection, model: this.model});
+    /* TO DO: Fix hacky solution */
+    $(this.el).parent("tr").after(this.subrow.render().$el);
+    this.model.set("subgrid", this.subrow.subgrid);
+    this.model.set("subcollection", this.subrow.subcollection);
+  },
+/**
+  Renders a Collasped view.
+*/
+  renderCollasped: function () {
+    this.model.set("substate", "collasped");
+    if(this.subrow != undefined)
+      this.subrow.remove();
   },
 /**
   Checks the current state of the cell, either:
@@ -167,16 +196,13 @@ var SubgridCell = Backgrid.SubgridCell = Backgrid.Cell.extend({
   stateConverter: function () {
     $(this.el).html("");
     if (this.model.get("substate") == "collasped"){
-      this.model.set("substate", "expanded");
-      this.subrow = new SubgridRow({columns: this.column.collection, model: this.model});
-      $(this.el).parent("tr").after(this.subrow.render().$el);
+      this.renderExpanded();
     }else{
-      this.model.set("substate", "collasped");
-      this.subrow.remove();
+      this.renderCollasped();
     }
     this.model.set("subgrid", this.subrow.subgrid);
     this.model.set("subcollection", this.subrow.subcollection);
-    if(this.model.get('url') != undefined)
+    if(this.model.has('url'))
       this.model.save();
     $(this.el).append(this.icon());
   },
@@ -191,6 +217,7 @@ var SubgridCell = Backgrid.SubgridCell = Backgrid.Cell.extend({
     }).remove()
   },
   remove: function () {
+    this.model.unset("substate");
     if (this.subrow) {
       this.subrow.remove.apply(this, arguments);
       delete this.subrow;

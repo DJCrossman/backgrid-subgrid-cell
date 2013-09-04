@@ -1,3 +1,8 @@
+### 0.3
+
+- Cleaned unreadable code
+- Maintain expanded grid when re-rendering
+
 ### 0.2
 
 - Resolved Issues with Sorting.
