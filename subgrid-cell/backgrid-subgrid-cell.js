@@ -114,7 +114,7 @@ var SubgridCell = Backgrid.SubgridCell = Backgrid.Cell.extend({
   // define the icon within the cell
   icon: function () {
     var iconOptions = "+";
-    if(this.state == "expanded")
+    if(this.model.get("substate") == "expanded")
       iconOptions = "-";
     
     return (iconOptions);
@@ -133,7 +133,7 @@ var SubgridCell = Backgrid.SubgridCell = Backgrid.Cell.extend({
      said name cannot be found in the Backgrid module.
   */
   initialize: function (options) {
-    this.state = "collasped";
+    this.model.set("substate", "collasped");
     requireOptions(options, ["model", "column"]);
     requireOptions(options.column.attributes, ["optionValues"]);
     this.model.set("subcolumns", options.column.get("optionValues"));
@@ -166,16 +166,18 @@ var SubgridCell = Backgrid.SubgridCell = Backgrid.Cell.extend({
 */
   stateConverter: function () {
     $(this.el).html("");
-    if (this.state == "collasped"){
-      this.state = "expanded";
+    if (this.model.get("substate") == "collasped"){
+      this.model.set("substate", "expanded");
       this.subrow = new SubgridRow({columns: this.column.collection, model: this.model});
       $(this.el).parent("tr").after(this.subrow.render().$el);
     }else{
-      this.state = "collasped";
+      this.model.set("substate", "collasped");
       this.subrow.remove();
     }
     this.model.set("subgrid", this.subrow.subgrid);
     this.model.set("subcollection", this.subrow.subcollection);
+    if(this.model.get('url') != undefined)
+      this.model.save();
     $(this.el).append(this.icon());
   },
 /**
