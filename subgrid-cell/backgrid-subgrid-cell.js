@@ -1,6 +1,6 @@
 /*
   backgrid-subgrid-cell
-  David Crossman - September 4, 2013
+  David Crossman - September 5, 2013
 */
 
 (function (window, $, _, Backbone, Backgrid)  {
@@ -110,9 +110,11 @@ var SubgridRow = Backgrid.SubgridRow = Backbone.View.extend({
 
 var SubgridCell = Backgrid.SubgridCell = Backgrid.Cell.extend({
 
-  className: function () {
-    var parentId = this.cid.substr(4) - 1;
-    return "subgrid-cell view" + parentId;
+  /** @property */
+  className: "subgrid-cell",
+  /** @property */
+  parentId: function () {
+    return this.cid.substr(4) - 1;
   },
   // define the icon within the cell
   icon: function () {
@@ -145,7 +147,7 @@ var SubgridCell = Backgrid.SubgridCell = Backgrid.Cell.extend({
     if (!(this.column instanceof Backgrid.Column)) {
       this.column = new Backgrid.Column(this.column);
     }
-    this.listenTo(Backbone, "backgrid:sort", this.clearSubgrid);
+    this.listenToOnce(this.model.collection, "backgrid:sort", this.clearSubgrid);
     this.model.bind("remove", this.clearSubgrid, this);
   },
   /**
@@ -216,6 +218,9 @@ var SubgridCell = Backgrid.SubgridCell = Backgrid.Cell.extend({
       return ($(this).attr("id") == thisView.model.get('id')); 
     }).remove()
   },
+/**
+  Removes the View.
+*/   
   remove: function () {
     this.model.unset("substate");
     if (this.subrow) {

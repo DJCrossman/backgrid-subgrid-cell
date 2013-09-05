@@ -2,6 +2,7 @@
 
 - Cleaned unreadable code
 - Maintain expanded grid when re-rendering
+- More comments
 
 ### 0.2
 
