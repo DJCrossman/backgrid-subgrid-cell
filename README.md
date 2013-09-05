@@ -1,5 +1,7 @@
 # Backgrid-Subgrid-Cell.js
 
+### Further Development may be continued in regard to [Issue #99](https://github.com/wyuenho/backgrid/issues/99)
+
 Yo' dawg, I heard you like grids. This extension of Backgrid.js allows the user to attach a collection to each individual model. For larger projects that handle complex sets of components. It follows the same structure of Backgrid.js to provide offers a simple programming solution.
 
 Backgrid-subgrid-cell.js offers the user a choice of organizing their data so that fits best. Keeping the data structure formed by Backbone.js, this tool
@@ -77,4 +79,4 @@ var world = new WorldView();
 Boom! This initializes a grid with subgrid. 
 
 ## Result
-Check it out [here](http://DJCrossman.github.com/backgrid-subgrid-cell//).
+Check it out [here](http://DJCrossman.github.com/backgrid-subgrid-cell/).
