@@ -1,6 +1,6 @@
 /*
   backgrid-subgrid-cell
-  David Crossman - September 5, 2013
+  David Crossman - October 7, 2013
 */
 
 (function (window, $, _, Backbone, Backgrid)  {
@@ -140,7 +140,8 @@ var SubgridCell = Backgrid.SubgridCell = Backgrid.Cell.extend({
   initialize: function (options) {
     requireOptions(options, ["model", "column"]);
     requireOptions(options.column.attributes, ["optionValues"]);
-    this.model.set("subcolumns", options.column.get("optionValues"));
+    if (typeof this.model.get('subcolumns') == "undefined") 
+      this.model.set("subcolumns", options.column.get("optionValues"));
     requireTypeOrder(options.column, "subgrid", 0 );
 
     this.column = options.column;

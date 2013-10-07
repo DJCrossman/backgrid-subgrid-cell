@@ -1,3 +1,7 @@
+### 0.4
+
+- Added option of rows having customized subcolumns
+
 ### 0.3
 
 - Cleaned unreadable code
