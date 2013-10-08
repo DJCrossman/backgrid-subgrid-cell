@@ -1,6 +1,6 @@
 /*
   backgrid-subgrid-cell
-  David Crossman - October 7, 2013
+  David Crossman - October 8, 2013
 */
 
 (function (window, $, _, Backbone, Backgrid)  {
@@ -83,6 +83,7 @@ var SubgridRow = Backgrid.SubgridRow = Backbone.View.extend({
                 });
 
     this.listenTo(Backbone, "SubgridCell:remove", this.render);
+    this.listenTo(this.model, "change", this.render);
   },
   /**
      Renders a row containing a subgrid for this row's model.
@@ -150,6 +151,7 @@ var SubgridCell = Backgrid.SubgridCell = Backgrid.Cell.extend({
     }
     this.listenToOnce(this.model.collection, "backgrid:sort", this.clearSubgrid);
     this.model.bind("remove", this.clearSubgrid, this);
+    this.listenTo(this.model, "change" this.updateSubrow);
   },
   /**
     Renders a view.
@@ -182,6 +184,7 @@ var SubgridCell = Backgrid.SubgridCell = Backgrid.Cell.extend({
     this.model.set("subgrid", this.subrow.subgrid);
     this.model.set("subcollection", this.subrow.subcollection);
   },
+
 /**
   Renders a Collasped view.
 */
@@ -208,6 +211,12 @@ var SubgridCell = Backgrid.SubgridCell = Backgrid.Cell.extend({
     if(this.model.has('url'))
       this.model.save();
     $(this.el).append(this.icon());
+  },
+/**
+  Updates the Subrow's model to Parent's model
+*/
+  updateSubrow: function () {
+    this.subrow.model = this.model;
   },
 /**
   Binds the remove function with the row when a model is removed.
