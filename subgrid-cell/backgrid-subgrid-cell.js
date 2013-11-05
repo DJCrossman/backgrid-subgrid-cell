@@ -60,16 +60,16 @@
          */
         initialize: function (options) {
             var thisView = this;
-            this.parent = options.model;
+            this.model = this.parent = options.model;
             var GridColumnView = Backbone.View.extend({ tagName: "td" });
             var SubCollection = Backbone.Collection.extend({ model: this.submodel });
             this.gridColumnView = new GridColumnView({});
             this.sideColumnView = new GridColumnView({});
 
-            this.el.id = this.parent.get("id");
+            this.el.id = this.model.get("id");
             requireOptions(options, ["columns", "model"]);
             this.columns = options.columns;
-            var subcolumns = this.subcolumns = this.parent.get("subcolumns");
+            var subcolumns = this.subcolumns = this.model.get("subcolumns");
             if (!(subcolumns instanceof Backgrid.Columns)) {
                 subcolumns = this.subcolumns = this.model.subcolumns = new Backgrid.Columns(subcolumns);
             }
@@ -118,10 +118,6 @@
 
         /** @property */
         className: "subgrid-cell",
-        /** @property */
-        parentId: function () {
-            return this.cid.substr(4) - 1;
-        },
         // define the icon within the cell
         icon: function () {
             var iconOptions = "+";
@@ -171,13 +167,14 @@
             } else {
                 this.model.set("substate", "collasped");
             }
-            $(this.el).append(this.icon());
+            this.$el.append(this.icon());
             return this;
         },
 
         events: {
             "click": "stateConverter"
         },
+
         /**
           Renders a Expanded view.
         */
@@ -195,6 +192,7 @@
             if (this.subrow != undefined)
                 this.subrow.remove();
         },
+
         /**
           Updates the Subrow's model to Parent's model
         */
@@ -204,7 +202,7 @@
             }
             this.subrow = new SubgridRow({ columns: this.column.collection, model: this.model });
             /* TO DO: Fix hacky solution */
-            $(this.el).parent("tr").after(this.subrow.render().$el);
+            this.$el.parent("tr").after(this.subrow.render().$el);
             this.model.set("subgrid", this.subrow.subgrid);
         },
         /**
@@ -214,7 +212,7 @@
           and saves the current data the model.
         */
         stateConverter: function () {
-            $(this.el).html("");
+            this.$el.html("");
             if (this.model.get("substate") == "collasped") {
                 this.renderExpanded();
             } else {
@@ -224,7 +222,7 @@
             this.model.set("subcollection", this.subrow.subcollection);
             if (this.model.has('url'))
                 this.model.save();
-            $(this.el).append(this.icon());
+            this.$el.append(this.icon());
         },
         /**
           Binds the remove function with the row when a model is removed.
@@ -234,7 +232,7 @@
             // TO DO : Clean up code
             $(".backgrid-subgrid-row").filter(function () {
                 return ($(this).attr("id") == thisView.model.get('id'));
-            }).remove()
+            }).remove();
         },
         /**
           Removes the View.
