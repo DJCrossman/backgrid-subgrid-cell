@@ -1,0 +1,24 @@
+{
+  "name": "backgrid-subgrid-cell",
+  "version": "0.2.0",
+  "homepage": "https://github.com/DJCrossman/backgrid-subgrid-cell",
+  "description": "An extension for Backgrid.js that allows users to play with sub-tables.",
+  "authors": [
+    "David Crossman"
+  ],
+  "keywords": [
+    "backgrid",
+    "subgrid",
+    "backbone"
+  ],
+  "main": [
+    "subgrid-cell/backgrid-subgrid-cell.js",
+    "subgrid-cell/backgrid-subgrid-cell.css"
+  ],
+  "license": "MIT",
+  "ignore": [
+  ],
+  "dependencies": {
+    "backgrid": "~0.3.0"
+  }
+}
